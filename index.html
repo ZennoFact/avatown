@@ -22,18 +22,46 @@
         socketio.emit("connected", name);
     }
 
+    function publishKeyCode(e) {
+        var key = e.keyCode;
+        switch (key) {
+            case 17: // Ctrl action 起動
+            case 37: // Left
+            case 38: // Up
+            case 39: // Right
+            case 40: // Down
+                var msg = "[" + myName + "] " + e.keyCode;
+                socketio.emit("publish", {value: msg});
+                textInput.value = '';
+                break;
+            case 16: // Shift goto message
+                document.removeEventListener('keydown', publishKeyCode);
+                var textInput = document.getElementById('msg_input');
+                    textInput.focus();
+                return null;
+            default:
+                console.log("特に何もしない");
+                return null;
+        }
+
+    }
     function publishMessage(e) {
-        var textInput = document.getElementById('msg_input');
-//        var msg = "[" + myName + "] " + textInput.value;
-        var msg = "[" + myName + "] " + e.keyCode;
-        socketio.emit("publish", {value: msg});
-        textInput.value = '';
+        var key = e.keyCode;
+        if (key === 13) {
+            var textInput = document.getElementById('msg_input');
+            var msg = "[" + myName + "] " + textInput.value;
+            socketio.emit("publish", {value: msg});
+            textInput.value = '';
+            document.addEventListener('keydown', publishKeyCode);
+        }
     }
 
     function addMessage (msg) {
-        var domMeg = document.createElement('div');
-        domMeg.innerHTML = new Date().toLocaleTimeString() + ' ' + msg;
-        msgArea.appendChild(domMeg);
+        if (2 < msg.length) {
+            var domMeg = document.createElement('div');
+            domMeg.innerHTML = new Date().toLocaleTimeString() + ' ' + msg;
+            msgArea.appendChild(domMeg);
+        }
     }
 
     // 3.開始処理
@@ -42,7 +70,8 @@
     addMessage("貴方は" + myName + "さんとして入室しました");
     start(myName);
 
-    document.addEventListener('keydown', publishMessage);
+    document.addEventListener('keydown', publishKeyCode);
+    document.getElementById('msg_input').addEventListener('keydown', publishMessage);
 </script>
 </body>
 </html>
