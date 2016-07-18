@@ -2,14 +2,26 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
+    <link rel="shortcut icon" href="assets/avatown.ico">
     <title>chat</title>
+    <link rel="stylesheet" href="assets/nomalize.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<input type="text" id="msg_input" style="width:200px;" />
-<button onclick="publishMessage();">語る</button>
-<div id="msg"></div>
+<canvas id="canvas"></canvas>
+<div>
+    <input type="text" id="msg_input" style="width:200px;" />
+    <button onclick="publishMessage">語る</button>
+</div>
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
+<script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+<script src="https://code.createjs.com/soundjs-0.6.2.min.js"></script>
+<script src="user.js"></script>
+<script src="avatownModel.js"></script>
 <script type="text/javascript">
+
     // 1.イベントとコールバックの定義
     var socketio = io.connect('http://localhost:8000');
 
@@ -26,13 +38,6 @@
         var key = e.keyCode;
         switch (key) {
             case 17: // Ctrl action 起動
-            case 37: // Left
-            case 38: // Up
-            case 39: // Right
-            case 40: // Down
-                var msg = "[" + myName + "] " + e.keyCode;
-                socketio.emit("publish", {value: msg});
-                textInput.value = '';
                 break;
             case 16: // Shift goto message
                 document.removeEventListener('keydown', publishKeyCode);
@@ -41,37 +46,80 @@
                 return null;
             default:
                 console.log("特に何もしない");
-                return null;
+                break;
         }
+        var msg = '{"name":"' + myName + '","keycode":"' + e.keyCode + '"}';
+        socketio.emit("publish", {value: msg});
 
+//        stage.update();
     }
     function publishMessage(e) {
         var key = e.keyCode;
         if (key === 13) {
             var textInput = document.getElementById('msg_input');
-            var msg = "[" + myName + "] " + textInput.value;
+            var msg = '{"name":"' + myName + '","keycode":"im","message":"' + textInput.value + '"}';
             socketio.emit("publish", {value: msg});
             textInput.value = '';
             document.addEventListener('keydown', publishKeyCode);
+            textInput.blur();
         }
+//        stage.update();
     }
 
     function addMessage (msg) {
-        if (2 < msg.length) {
-            var domMeg = document.createElement('div');
-            domMeg.innerHTML = new Date().toLocaleTimeString() + ' ' + msg;
-            msgArea.appendChild(domMeg);
+        var data = JSON.parse(msg);
+        switch (data.keycode) {
+            case 'login':
+                var user = new User(data.name, 'mario', 1, 1, 1);
+                    console.log(user);
+                stage.addChild(user);
+                users[user.name] = user;
+                if (user.name !== myName) {
+                    var msg = '{"name":"' + myName + '","keycode":"userInfo","user":' + users[myName].toJsonString() + '}';
+                    socketio.emit("publish", {value: msg});
+                }
+                break;
+            case 'logout':
+                    stage.removeChild(users[data.name].namePlate);
+                stage.removeChild(users[data.name]);
+                delete users[data.name];
+                break;
+            case 'userInfo':
+                var info = data.user;
+                if (!(data.name in users)) {
+                    var user = new User(info.name, info.imageKey, info.head, info.hair, info.body, info.x, info.y, info.scaleX, info.scaleY);
+                    stage.addChild(user)
+                    users[user.name] = user;
+                }
+                break;
+            case 'im':
+                users[data.name].talk(data.message);
+                break;
+            case '17': // Ctrl action 起動
+                break;
+            case '37': // Left
+            case '38': // Up
+            case '39': // Right
+            case '40': // Down
+                users[data.name].walk(data.keycode);
+                break;
+            default:
+                console.log("特に何もしない");
+                return null;
+
         }
+        //Update stage will render next frame
+//        stage.update();
     }
 
     // 3.開始処理
     var msgArea = document.getElementById("msg");
     var myName = <<NAME>>;
-    addMessage("貴方は" + myName + "さんとして入室しました");
     start(myName);
 
     document.addEventListener('keydown', publishKeyCode);
     document.getElementById('msg_input').addEventListener('keydown', publishMessage);
+
 </script>
 </body>
 </html>
