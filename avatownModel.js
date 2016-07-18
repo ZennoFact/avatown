@@ -22,7 +22,7 @@ function preload() {
     queue.setMaxConnections(2);
     var manifest = [{
         "id": "mario",
-        "src": "./assets/m-256x400.png"
+        "src": "./assets/images/m-256x400.png"
     }
     ];
     // 指定したリスト（マニフェスト）に従って画像を読み込むよー

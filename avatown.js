@@ -33,8 +33,8 @@ var server = require("http").createServer(function(req, res) {
             res.write(js);
             res.end();
             break;
-        case '/assets/m-256x400.png':
-            var png = fs.readFileSync('./assets/m-64x100.png');
+        case '/assets/images/m-256x400.png':
+            var png = fs.readFileSync('./assets/images/m-64x100.png');
             res.writeHead(200, {'Content-Type': 'image/png'});
             res.write(png);
             res.end();
@@ -54,12 +54,6 @@ var server = require("http").createServer(function(req, res) {
         case '/assets/style.css':
             var png = fs.readFileSync('./assets/style.css');
             res.writeHead(200, {'Content-Type': 'text/css'});
-            res.write(png);
-            res.end();
-            break;
-        case '/assets/001.png':
-            var png = fs.readFileSync('./assets/001.png');
-            res.writeHead(200, {'Content-Type': 'image/png'});
             res.write(png);
             res.end();
             break;
