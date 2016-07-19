@@ -28,6 +28,7 @@ function User(id, name, imageKey, actionName, x, y, scaleX, scaleY, alpha, speed
     this.setBallonPos();
 
     // actionSelectorの発動
+    this.isAction = false;
     this.actionSelector();
 }
 
@@ -104,27 +105,27 @@ User.prototype.turn = function() {
     //this.regX = this.image.width * this.scaleX / 2;
 };
 User.prototype.action = function() {
-    this.isAction = true;
+    if (!this.isAction) {
+        this.isAction = true;
 
-    // アクションの実態　面白そうなものがあったら増やす（残像とか）
-    switch (this.actionName) {
-        case 'dash':
-            this.dash();
-            break;
-        case 'hide':
-            this.hide();
-            break;
-        case 'titan':
-            this.titan();
-            break;
-        default:
-            console.log('No Action');
-            break;
+        // アクションの実体　面白そうなものがあったら増やす（残像とか）
+        switch (this.actionName) {
+            case 'dash':
+                this.dash();
+                break;
+            case 'hide':
+                this.hide();
+                break;
+            case 'titan':
+                this.titan();
+                break;
+            default:
+                console.log('No Action');
+                break;
+        }
+        // アニメーションが終わったら
+        //this.isAction = false;
     }
-
-
-    // アニメーションが終わったら
-    this.isAction = false;
 };
 
 // id, name, imageKey, actionName, x, y, scaleX, scaleY
@@ -187,6 +188,7 @@ var dash = function () {
     console.log("Let's Dash");
     if (this.speed === 5) this.speed = 50;
     else this.speed = 5;
+    this.isAction = false;
 };
 var hide = function () {
     console.log("I am Shinobi");
@@ -197,16 +199,30 @@ var hide = function () {
         this.alpha = 1.0;
         this.namePlate.alpha = 1.0;
     }
+    this.isAction = false;
 };
 var titan = function() {
     console.log("Attack of Titan");
     if (-1.5 <= this.scaleX && this.scaleX <= 1.5) {
-        this.scaleX = 2.0;
-        this.scaleY = 2.0;
+        createjs.Tween.get(this, { loop: false, override:true })
+            .to({ scaleX: 1.5, scaleY: 1.5 }, 250)
+            .to({ scaleX: 1.3, scaleY: 1.3 }, 150)
+            .to({ scaleX: 1.8, scaleY: 1.8 }, 250)
+            .to({ scaleX: 1.5, scaleY: 1.5 }, 150)
+            .to({ scaleX: 2.0, scaleY: 2.0 }, 250)
+            .call(function() {this.isAction = false;});
         var borderBottom = canvas.height - this.image.height * this.scaleY / 2;
         if (borderBottom < this.y) this.y = borderBottom;
     } else {
-        this.scaleX = 0.8;
+        //this.scaleX = 2.0;
+        //this.scaleY = 2.0;
+        createjs.Tween.get(this, { loop: false, override:true })
+            .to({ scaleX: 1.4, scaleY: 1.4 }, 250)
+            .to({ scaleX: 1.8, scaleY: 1.8 }, 250)
+            .to({ scaleX: 1.2, scaleY: 1.2 }, 150)
+            .to({ scaleX: 1.4, scaleY: 1.4 }, 150)
+            .to({ scaleX: 0.8, scaleY: 0.8 }, 250)
+            .call(function() {this.isAction = false;});
         this.changeScale();
     }
     this.moveOption();
