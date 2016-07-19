@@ -22,7 +22,7 @@ function preload() {
     queue.setMaxConnections(2);
     var manifest = [{
         "id": "mario",
-        "src": "./assets/images/m-256x400.png"
+        "src": "./assets/images/m-64x100.png"
     }
     ];
     // 指定したリスト（マニフェスト）に従って画像を読み込むよー
@@ -54,4 +54,5 @@ function handleResize(event) {
 
 // タイマーの設定。描画の変更は一括で
 createjs.Ticker.setFPS(30);
+createjs.Ticker.useRAF = true;
 createjs.Ticker.addEventListener("tick", stage);
