@@ -2,14 +2,15 @@ preload();
 var stage;
 var mario;
 var images = {};
-var userName;
 //var user;
 stage = new createjs.Stage("canvas");
 // 画面のリサイズに関してイベントの登録と，ロード後一発目に起動させておく
 window.addEventListener("resize", handleResize);
 handleResize();
 
-// 接続しているユーザーの一覧
+// 自分の使用しているユーザー
+var currentUser;
+// 接続している他のユーザーの一覧
 var users = {};
 
 function init() {

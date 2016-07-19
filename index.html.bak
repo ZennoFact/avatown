@@ -39,24 +39,17 @@
         var key = e.keyCode;
         switch (key) {
             case 17: // Ctrl action 起動
-                    currentUser.action();
                 break;
             case 16: // Shift goto message
                 document.removeEventListener('keydown', publishKeyCode);
                 var textInput = document.getElementById('msg_input');
                     textInput.focus();
                 return null;
-            case 37: // Left
-            case 38: // Up
-            case 39: // Right
-            case 40: // Down
-                currentUser.walk(key.toString());
-                break;
             default:
                 console.log("特に何もしない");
                 break;
         }
-        var msg = '{"id":"' + currentUser.id + '","name":"' + currentUser.name + '","keycode":"' + e.keyCode + '"}';
+        var msg = '{"id":"' + myId + '","name":"' + myName + '","keycode":"' + e.keyCode + '"}';
         socketio.emit("publish", {value: msg});
 
 //        stage.update();
@@ -65,9 +58,8 @@
         var key = e.keyCode;
         if (key === 13) {
             var textInput = document.getElementById('msg_input');
-            var msg = '{"id":"' + currentUser.id + '","name":"' + currentUser.name + '","keycode":"im","message":"' + textInput.value + '"}';
+            var msg = '{"id":"' + myId + '","name":"' + myName + '","keycode":"im","message":"' + textInput.value + '"}';
             socketio.emit("publish", {value: msg});
-            currentUser.talk(textInput.value);
             textInput.value = '';
             document.addEventListener('keydown', publishKeyCode);
             textInput.blur();
@@ -79,35 +71,23 @@
         var data = JSON.parse(msg);
         switch (data.keycode) {
             case 'login':
-                if (data.id === myId) {
-                    currentUser = new User(data.id, data.name, data.imageKey, data.actionName);
-                    stage.addChild(currentUser);
-                    currentUser.addMessage('Hello world!');
-                } else {
-                    var user = new User(data.id, data.name, data.imageKey, data.actionName);
-                    users[data.id] = user;
-                    stage.addChild(user);
-                    var msg = '{"id":"' + myId + '","name":"' + myName + '","keycode":"userInfo","user":' + currentUser.toJsonString() + '}';
+                var user = new User(data.id, data.name, data.imageKey, data.actionName);
+                stage.addChild(user);
+                user.addMessage('Hello world!');
+                users[user.id] = user;
+                if (user.id !== myId) {
+                    var msg = '{"id":"' + myId + '","name":"' + myName + '","keycode":"userInfo","user":' + users[myId].toJsonString() + '}';
                     socketio.emit("publish", {value: msg});
                 }
                 break;
             case 'logout':
-                var user;
-                if (data.id === myId) {
-                    user = currentUser;
-                } else {
-                    user = users[data.id];
-                    delete users[data.id];
-                }
-                stage.removeChild(user.balloon);
-                stage.removeChild(user.namePlate);
-                stage.removeChild(user);
-                var div = document.getElementById(user.id);
-                document.body.removeChild(div);
+                stage.removeChild(users[data.id].namePlate);
+                stage.removeChild(users[data.id]);
+                delete users[data.id];
                 break;
             case 'userInfo':
                 var info = data.user;
-                if (!(data.id in users)) { //　存在しなければ追加
+                if (!(data.id in users)) {
                     // id, name, imageKey, actionName, x, y, scaleX, scaleY
                     var user = new User(info.id, info.name, info.imageKey, info.actionName, info.x, info.y, info.scaleX, info.scaleY, info.alpha, info.speed);
                     stage.addChild(user);

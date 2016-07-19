@@ -144,20 +144,20 @@ User.prototype.toJsonString = function () {
 // IMに関する設定
 User.prototype.createBalloon = function() {
     var div = document.createElement('div');
-    div.setAttribute('id', this.name);
+    div.setAttribute('id', this.id);
     div.classList.add('balloon');
     document.body.appendChild(div);
     return new createjs.DOMElement(div);
 };
 User.prototype.addMessage = function(message) {
-    document.getElementById(this.name).innerHTML = message;
+    document.getElementById(this.id).innerHTML = message;
     createjs.Tween.get(this.balloon, { loop: false, override:true })
         .to({ alpha: 1 }, 500, createjs.Ease.getPowInOut(2))
         .wait(5000)
         .to({ alpha: 0 }, 500, createjs.Ease.getPowInOut(2));
 };
 User.prototype.setBallonPos = function() {
-    var balloon = document.getElementById(this.name);
+    var balloon = document.getElementById(this.id);
     this.balloon.x = this.x - balloon.clientWidth / 2;
     if (this.balloon.x < 0) this.balloon.x = 0;
     else if (window.innerWidth - balloon.clientWidth < this.balloon.x) this.balloon.x = window.innerWidth - balloon.clientWidth;
