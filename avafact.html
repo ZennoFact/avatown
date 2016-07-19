@@ -5,11 +5,26 @@
     <title>Factry</title>
 </head>
 <body>
-    <form action="http://localhost:8000" method="post">
-        <input type="text" name="name"/>
-        <input type="text" name="character"/>
-        <input type="submit" value="Go!"/>
-    </form>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+    </div>
+    <div class="container">
+        <div class="container character-list">
+
+        </div>
+        <div class="container action-box">
+
+        </div>
+    </div>
+    <div>
+        <form action="http://localhost:8000" method="post">
+            <!--name, imageKey, actionName, x, y, scaleX, scaleY-->
+            <input type="text" name="name"/>
+            <input type="text" name="imageKey"/>
+            <input type="text" name="actionName"/>
+            <input type="submit" value="Go!"/>
+        </form>
+    </div>
 <script type="text/javascript"></script>
 </body>
 </html>

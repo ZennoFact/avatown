@@ -1,5 +1,6 @@
 var fs = require("fs");
 var qs = require('querystring');
+require('date-utils');
 var server = require("http").createServer(function(req, res) {
     console.log(req.url);
     switch(req.url) {
@@ -15,8 +16,16 @@ var server = require("http").createServer(function(req, res) {
                     res.writeHead(200, {"Content-Type":"text/html"});
                     var output = fs.readFileSync("./index.html", "utf-8");
                     console.log(POST);
-                    var name = new String("'" + POST.name + "'");
-                    output = output.replace("<<NAME>>", name);
+                    //var name = new String("'" + POST.name + "'");
+                    //var img = new String("'" + POST.imageKey + "'");
+                    //var act = new String("'" + POST.actionName + "'");
+                    var dt = new Date();
+                    var formatted = dt.toFormat("YYYYMMDDHH24MISS");
+                    //var date= new String("'" + formatted + "'");
+                    output = output.replace("<<NAME>>", POST.name)
+                                    .replace("<<DATE>>", formatted)
+                                    .replace("<<IMAGE>>", POST.imageKey)
+                                    .replace("<<ACTION>>", POST.actionName);
                     res.end(output);
                 });
             }
@@ -33,7 +42,7 @@ var server = require("http").createServer(function(req, res) {
             res.write(js);
             res.end();
             break;
-        case '/assets/images/m-256x400.png':
+        case '/assets/images/m-64x100.png':
             var png = fs.readFileSync('./assets/images/m-64x100.png');
             res.writeHead(200, {'Content-Type': 'image/png'});
             res.write(png);
@@ -68,9 +77,10 @@ var userHash = {};
 io.sockets.on("connection", function (socket) {
 
     // 接続開始カスタムイベント(接続元ユーザを保存し、他ユーザへ通知)
-    socket.on("connected", function (name) {
-        var msg = '{"keycode":"login","name":"' + name + '"}';
-        userHash[socket.id] = name;
+    socket.on("connected", function (id, name, img, act) {
+        var msg = '{"keycode":"login","id":"' + id +'","name":"' + name +'","imageKey":"' + img +'","actionName":"' + act + '"}';
+        console.log(msg);
+        userHash[socket.id] = id;
         console.log("userHash:" + userHash);
         io.sockets.emit("publish", {value: msg});
     });
@@ -78,13 +88,14 @@ io.sockets.on("connection", function (socket) {
     // メッセージ送信カスタムイベント
     socket.on("publish", function (data) {
         io.sockets.emit("publish", {value:data.value});
+        //socket.broadcast.emit("publish", {value:data.value});
     });
 
     // 接続終了組み込みイベント(接続元ユーザを削除し、他ユーザへ通知)
     socket.on("disconnect", function () {
         if (userHash[socket.id]) {
             //var msg = userHash[socket.id] + "が退出しました";
-            var msg = '{"keycode":"logout","name":"' + userHash[socket.id] + '"}'
+            var msg = '{"keycode":"logout","id":"' + userHash[socket.id] + '"}'
             delete userHash[socket.id];
             io.sockets.emit("publish", {value: msg});
         }
