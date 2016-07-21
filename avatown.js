@@ -14,7 +14,7 @@ var server = require("http").createServer(function(req, res) {
                 req.on('end', function() {
                     POST = qs.parse(body);
                     res.writeHead(200, {"Content-Type":"text/html"});
-                    var output = fs.readFileSync("./index.html", "utf-8");
+                    var output = fs.readFileSync("./avafact.html", "utf-8");
                     console.log(POST);
                     //var name = new String("'" + POST.name + "'");
                     //var img = new String("'" + POST.imageKey + "'");
@@ -48,22 +48,58 @@ var server = require("http").createServer(function(req, res) {
             res.write(png);
             res.end();
             break;
+        case '/assets/images/p-64x100.png':
+            var png = fs.readFileSync('./assets/images/p-64x100.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/v-64x100.png':
+            var png = fs.readFileSync('./assets/images/v-64x100.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/c-64x100.png':
+            var png = fs.readFileSync('./assets/images/c-64x100.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/i-64x100.png':
+            var png = fs.readFileSync('./assets/images/i-64x100.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/r-64x100.png':
+            var png = fs.readFileSync('./assets/images/r-64x100.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
         case '/assets/avatown.ico':
-            var png = fs.readFileSync('./assets/avatown.ico');
+            var ico = fs.readFileSync('./assets/avatown.ico');
             res.writeHead(200, {'Content-Type': 'image/x-icon'});
-            res.write(png);
+            res.write(ico);
             res.end();
             break;
-        case '/assets/nomalize.css':
-            var png = fs.readFileSync('./assets/nomalize.css');
+        case '/assets/css/nomalize.css':
+            var css = fs.readFileSync('./assets/css/nomalize.css');
             res.writeHead(200, {'Content-Type': 'text/css'});
-            res.write(png);
+            res.write(css);
             res.end();
             break;
-        case '/assets/style.css':
-            var png = fs.readFileSync('./assets/style.css');
+        case '/assets/css/style.css':
+            var css = fs.readFileSync('./assets/css/style.css');
             res.writeHead(200, {'Content-Type': 'text/css'});
-            res.write(png);
+            res.write(css);
+            res.end();
+            break;
+        case '/assets/css/lib/bulma.css':
+            var css = fs.readFileSync('./assets/css/lib/bulma.css');
+            res.writeHead(200, {'Content-Type': 'text/css'});
+            res.write(css);
             res.end();
             break;
     }
@@ -88,14 +124,14 @@ io.sockets.on("connection", function (socket) {
     // メッセージ送信カスタムイベント
     socket.on("publish", function (data) {
         //io.sockets.emit("publish", {value:data.value});
-        socket.broadcast.emit("publish", {value:data.value});
+        socket.broadcast.emit("publish", {value: data.value});
     });
 
     // 接続終了組み込みイベント(接続元ユーザを削除し、他ユーザへ通知)
     socket.on("disconnect", function () {
         if (userHash[socket.id]) {
             //var msg = userHash[socket.id] + "が退出しました";
-            var msg = '{"keycode":"logout","id":"' + userHash[socket.id] + '"}'
+            var msg = '{"keycode":"logout","id":"' + userHash[socket.id] + '"}';
             delete userHash[socket.id];
             io.sockets.emit("publish", {value: msg});
         }
