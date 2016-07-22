@@ -7,8 +7,21 @@ body::-webkit-scrollbar {
     background-color: #646464;
 }
 div.balloon{
-    background-color: #FFF;
-    color: #000;
+     background-color: #FFF;
+     color: #000;
+     top:0;
+     left:0;
+     max-width:300px;
+     border-radius: 10px;
+     padding: 0.5em;
+     line-height: 150%;
+     font-size:1.4em;
+     text-align: left;
+     -webkit-user-select: none;
+     user-select: none;
+     word-wrap : break-word;
+ }
+#card{
     top:0;
     left:0;
     max-width:300px;

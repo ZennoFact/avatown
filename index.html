@@ -11,9 +11,41 @@
 </head>
 <body>
 <canvas id="canvas"></canvas>
-<div>
-    <input type="text" id="msg_input" class="input" placeholder="Input your message..." />
-</div>
+<!--<div>-->
+    <!--<input type="text" id="msg_input" class="input" placeholder="Input your message..." />-->
+<!--</div>-->
+
+<template id="template">
+    <div id="card">
+        <div class="card">
+            <div class="card-content">
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="" alt="Character">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p class="title is-3"><strong>名称</strong></p>
+                            <p class="subtitle is-3"><small>@id</small></p>
+                        </div>
+                    </div>
+                </article>
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <input type="text" id="msg_input" class="input is-medium" placeholder="Input your message..." />
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
 <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
@@ -149,7 +181,6 @@
     start(myId, myName, myImageKey, myActionName);
 
     document.addEventListener('keydown', publishKeyCode);
-    document.getElementById('msg_input').addEventListener('keydown', publishMessage);
 
 </script>
 </body>

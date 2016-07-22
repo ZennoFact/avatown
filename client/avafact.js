@@ -189,14 +189,6 @@ function  getAbsolutePos(element) {
         height: y2 - y1
     };
 }
-function  getPos(element) {
-    var x = element.getBoundingClientRect().left;
-    var y = element.getBoundingClientRect().top;
-    return {
-        left: x,
-        top: y
-    };
-}
 
 
 // Create.js 関連

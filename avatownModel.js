@@ -22,21 +22,31 @@ function init() {
     //TODO なぜか出ない
     document.getElementById('canvas').style.backgroundColor = '#a0d8ef';
     var shape = new createjs.Shape();
-    shape.graphics.beginFill("#000").drawRect(0,0,100,100);
-    shape.x = 10;
-    shape.y = 10;
+    shape.graphics.beginFill("#d0a36a").drawRect(0, window.innerHeight -700, window.innerWidth, 700);
     stage.addChild(shape);
-    stage.update();
-    //ground = new createjs.Shape();
-    //ground.graphics.beginFill("DarkRed");
-    //ground.graphics.drawRect(0, stage.height - 700, stage.width, 700);
-    //stage.addChild(ground);
-    console.log('mapset');
 
-    //currentUser = new User(data.id, data.name, data.imageKey, data.actionName);
+
+    var actionDict = {
+        'dash': '熱光学迷彩',
+        'hide': '加速装置(×10)',
+        'titan': '怒りの巨人化'
+    };
+    var t = document.querySelector('#template');
+    t.content.querySelector('strong').innerHTML = myName;
+    t.content.querySelector('small').innerHTML = '#' + actionDict[myActionName];
+    t.content.querySelector('img').src = images['s-' + myImageKey].src;
+    var clone = document.importNode(t.content, true);
+    document.body.appendChild(clone);
+    document.getElementById('msg_input').addEventListener('keydown', publishMessage);
+    var card = document.getElementById('card');
+    var cardElement = new createjs.DOMElement(card);
+    cardElement.x = 10;
+    cardElement.y = 10;
+    stage.addChild(cardElement);
+
+
     currentUser = new User(myId, myName, myImageKey, myActionName);
     stage.addChild(currentUser);
-    console.log('userset');
     currentUser.addMessage('Hello world!');
 }
 
@@ -62,6 +72,24 @@ function preload() {
     }, {
         "id": "dragon",
         "src": "./assets/images/r-64x100.png"
+    }, {
+        "id": "s-mushroom",
+        "src": "./assets/images/m-64x64.png"
+    }, {
+        "id": "s-picker",
+        "src": "./assets/images/p-64x64.png"
+    }, {
+        "id": "s-vacuum",
+        "src": "./assets/images/v-64x64.png"
+    }, {
+        "id": "s-mr.cardboard",
+        "src": "./assets/images/c-64x64.png"
+    }, {
+        "id": "s-iwao",
+        "src": "./assets/images/i-64x64.png"
+    }, {
+        "id": "s-dragon",
+        "src": "./assets/images/r-64x64.png"
     }
     ];
     // 指定したリスト（マニフェスト）に従って画像を読み込むよー
@@ -79,6 +107,12 @@ function handleComplete(event) {
     images['mr.cardboard'] = result["mr.cardboard"];
     images['iwao'] = result["iwao"];
     images['dragon'] = result["dragon"];
+    images['s-mushroom'] = result["s-mushroom"];
+    images['s-picker'] = result["s-picker"];
+    images['s-vacuum'] = result["s-vacuum"];
+    images['s-mr.cardboard'] = result["s-mr.cardboard"];
+    images['s-iwao'] = result["s-iwao"];
+    images['s-dragon'] = result["s-dragon"];
 
     init();
 }
