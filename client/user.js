@@ -3,19 +3,21 @@ function User(id, name, imageKey, actionName, x, y, scaleX, scaleY, alpha, speed
     this.name = name;
     this.imageKey = imageKey;
     this.image = images[this.imageKey];
-    this.actionName = actionName;
-    this.scaleX = scaleX || 0.8;
-    this.scaleY = scaleY || 0.8;
-    this.x = x || window.innerWidth / 2 - this.image.width / 2;
-    this.y = y || canvas.height - this.image.height * this.scaleY - 700;
+    this.actionName = actionName || 'No Action';
+    this.scaleX = scaleX || 0.4;
+    this.scaleY = scaleY || 0.4;
     this.regX = this.image.width * this.scaleX / 2;
     this.regY = this.image.height * this.scaleY / 2;
+    var canvasRect = getAbsolutePos(canvas);
+    console.log(canvasRect);
+    this.x = x || canvasRect.width / 7;
+    this.y = y || canvasRect.height / 8;
     this.alpha = alpha || 1.0;
     this.speed = speed || 5;
 
-    this.namePlate = new createjs.Text(name, "24px consolas", "#40aaef");
-    this.namePlate.x = window.innerWidth / 2 - this.image.width / 2;
-    this.namePlate.y = this.y - 30;
+    this.namePlate = new createjs.Text(name, "12px consolas", "#40aaef");
+    this.namePlate.x = this.x;
+    this.namePlate.y = this.y;
     this.namePlate.textAlign = 'center';
     this.namePlate.alpha = this.alpha || 1.0;
     stage.addChild(this.namePlate);
@@ -29,7 +31,6 @@ function User(id, name, imageKey, actionName, x, y, scaleX, scaleY, alpha, speed
 
     // actionSelectorの発動
     this.isAction = false;
-    this.actionSelector();
 }
 
 // 継承の仕方。まず，宣言してあるメソッドのプロトタイプを指定
@@ -44,11 +45,11 @@ User.prototype.talk = function(message) {
     this.setBallonPos();
 };
 User.prototype.walk = function(key) {
+    console.log('avatar:' + this.x + ', ' + this.y);
     switch(key) {
         case '37': // Left
             this.x -= this.speed;
-            var borderLeft = this.image.width * -this.scaleX - this.regX; // 右向きの時はscaleXは必ずマイナスなので調整
-            if (this.x < borderLeft) this.x = borderLeft;
+            if (this.x < 35) this.x = 35;
             if(this.scaleX > 0) {
                 this.turn();
             }
@@ -57,23 +58,19 @@ User.prototype.walk = function(key) {
             break;
         case '38': // Up
             this.y -= this.speed;
-            this.changeScale();
-            var borderTop = canvas.height - this.image.height * this.scaleY / 2 - 700;
-            if (this.y < borderTop) this.y = borderTop;
+            if (this.y < this.regY) this.y = this.regY;
             break;
         case '39': // Right
-            this.x += this.speed;
+            this.x += this.speed + window.pageXOffset;
             var borderRight = canvas.width - this.image.width * this.scaleX / 2;
-            if (borderRight < this.x) this.x = borderRight;
+            if (270 < this.x) this.x = 270;
             if(this.scaleX < 0) {
                 this.turn();
             }
             break;
         case '40': // Down
             this.y += this.speed;
-            this.changeScale();
-            var borderBottom = canvas.height - this.image.height * this.scaleY / 2;
-            if (borderBottom < this.y) this.y = borderBottom;
+            if ( 95 < this.y ) this.y = 95;
             break;
         default:
             console.log('引数が不正です');
@@ -82,27 +79,12 @@ User.prototype.walk = function(key) {
     this.setBallonPos();
 };
 User.prototype.moveOption =  function() {
-    this.namePlate.x = this.x + this.regX;
-    this.namePlate.y = this.y - this.regY - 30;
-    this.namePlate.regX = this.regX;
+    this.namePlate.x = this.x;
+    this.namePlate.y = this.y - 20;
 };
-User.prototype.changeScale = function() {
-    if (this.scaleX < -1.5 || 1.5 < this.scaleX) return null;
-    var scale = (1 - (canvas.height - this.image.height * this.scaleY - this.y) / 700) / 4;
-    if (this.scaleX < 0) {
-        this.scaleX = -scale - 0.8;
-        this.scaleY = scale + 0.8;
-        this.regX = this.image.width * -this.scaleX / 2;
-    } else {
-        this.scaleX = this.scaleY = scale + 0.8;
-        this.regX = this.image.width * this.scaleX / 2;
-    }
-    this.regY = this.image.height * this.scaleY / 2;
-};
+
 User.prototype.turn = function() {
     this.scaleX *= -1;
-    //this.x -= this.image.width * this.scaleX / 2;
-    //this.regX = this.image.width * this.scaleX / 2;
 };
 User.prototype.action = function() {
     if (!this.isAction) {
@@ -123,23 +105,9 @@ User.prototype.action = function() {
                 console.log('No Action');
                 break;
         }
-        // アニメーションが終わったら
+        // アニメーションが終わったら各メソッド内で以下を実行
         //this.isAction = false;
     }
-};
-
-// id, name, imageKey, actionName, x, y, scaleX, scaleY
-User.prototype.toJsonString = function () {
-  return '{"id":"' + this.id + '",' +
-          '"name":"' + this.name + '",' +
-      '"imageKey":"' + this.imageKey + '",' +
-     '"actionName":"' + this.actionName + '",' +
-              '"x":' + this.x + ',' +
-              '"y":' + this.y + ',' +
-         '"scaleX":' + this.scaleX + ',' +
-         '"scaleY":' + this.scaleY + ',' +
-          '"alpha":' + this.alpha + ',' +
-          '"speed":' + this.speed + '}';
 };
 
 // IMに関する設定
@@ -159,16 +127,17 @@ User.prototype.addMessage = function(message) {
 };
 User.prototype.setBallonPos = function() {
     var balloon = document.getElementById(this.id);
-    this.balloon.x = this.x - balloon.clientWidth / 2;
-    if (this.balloon.x < 0) this.balloon.x = 0;
-    else if (window.innerWidth - balloon.clientWidth < this.balloon.x) this.balloon.x = window.innerWidth - balloon.clientWidth;
-    this.balloon.y = this.y - this.regY - 34 - balloon.clientHeight;
+    this.balloon.x = 10 + this.x * 3;
+    this.balloon.y = 200 + this.y * 2;
 
 };
 
-// Todo input type=hidden にアクションのデータを設定するようにフロントでは頑張る。
 // 固有のアクションの設定
-User.prototype.actionSelector = function () {
+User.prototype.actionSelector = function (actionName) {
+    this.actionName = actionName;
+    this.dash = null;
+    this.hide = null;
+    this.titan = null;
     switch (this.actionName) {
         case 'dash': // 高速移動
             this.dash = dash;
@@ -180,6 +149,7 @@ User.prototype.actionSelector = function () {
             this.titan = titan;
             break;
         default:
+            actionName = 'No Action';
             break;
     }
 };
@@ -192,8 +162,7 @@ var dash = function () {
 };
 var hide = function () {
     console.log("I am Shinobi");
-    var hideRate = 0.02; // Todo いい感じの透明度に変更
-    if (this.id === myId) hideRate = 0.2;
+    var hideRate = 0.1;
     if (this.alpha === 1.0) {
         createjs.Tween.get(this, { loop: false, override:true })
             .to({ alpha: hideRate }, 500)
@@ -210,13 +179,13 @@ var hide = function () {
 };
 var titan = function() {
     console.log("Attack of Titan");
-    if (-1.5 <= this.scaleX && this.scaleX <= 1.5) {
+    if (-0.7 <= this.scaleX && this.scaleX <= 0.7) {
         createjs.Tween.get(this, { loop: false, override:true })
-            .to({ scaleX: 1.5, scaleY: 1.5 }, 250)
-            .to({ scaleX: 1.3, scaleY: 1.3 }, 150)
-            .to({ scaleX: 1.8, scaleY: 1.8 }, 250)
-            .to({ scaleX: 1.5, scaleY: 1.5 }, 150)
-            .to({ scaleX: 2.0, scaleY: 2.0 }, 250)
+            .to({ scaleX: 0.6, scaleY: 0.6 }, 250)
+            .to({ scaleX: 0.5, scaleY: 0.5 }, 150)
+            .to({ scaleX: 0.7, scaleY: 0.7 }, 250)
+            .to({ scaleX: 0.6, scaleY: 0.6 }, 150)
+            .to({ scaleX: 0.8, scaleY: 0.8 }, 250)
             .call(function() {this.isAction = false;});
         var borderBottom = canvas.height - this.image.height * this.scaleY / 2;
         if (borderBottom < this.y) this.y = borderBottom;
@@ -224,13 +193,12 @@ var titan = function() {
         //this.scaleX = 2.0;
         //this.scaleY = 2.0;
         createjs.Tween.get(this, { loop: false, override:true })
-            .to({ scaleX: 1.4, scaleY: 1.4 }, 250)
-            .to({ scaleX: 1.8, scaleY: 1.8 }, 250)
-            .to({ scaleX: 1.2, scaleY: 1.2 }, 150)
-            .to({ scaleX: 1.4, scaleY: 1.4 }, 150)
-            .to({ scaleX: 0.8, scaleY: 0.8 }, 250)
+            .to({ scaleX: 0.5, scaleY: 0.5 }, 250)
+            .to({ scaleX: 0.6, scaleY: 0.6 }, 250)
+            .to({ scaleX: 0.4, scaleY: 0.4 }, 150)
+            .to({ scaleX: 0.5, scaleY: 0.5 }, 150)
+            .to({ scaleX: 0.4, scaleY: 0.4 }, 250)
             .call(function() {this.isAction = false;});
-        this.changeScale();
     }
     this.moveOption();
     this.setBallonPos();

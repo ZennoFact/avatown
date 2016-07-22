@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Factory</title>
+    <link rel="shortcut icon" href="./assets/avatown.ico">
+    <link rel="stylesheet" href="./assets/css/nomalize.css">
+    <link rel="stylesheet" href="./assets/css/lib/bulma.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/avafact.css">
+</head>
+<body>
+<div class="tile is-vertical">
+    <div id="header" class="tile notification">
+        <div class="tile is-parent">
+            <article class="tile is-child is-bold">
+                <p class="title is-1">Avatar Factory</p>
+                <p class="subtitle">Create your avatar.</p>
+            </article>
+        </div>
+        <div class="tile is-parent is-3">
+            <article class="tile is-child">
+                <label for="name"><span class="title">Handle Name</span></label>
+                <input type="text" id="avatar-name" value="" class="input" placeholder="12文字以下，先頭文字は数字と記号以外で入力してください。" maxlength="12" required/>
+            </article>
+            <div id="factory-warning" class="notification is-warning">
+                <button id="btn-warning-ok" class="delete"></button>
+                あなたのハンドルネームが正しく入力されていません。
+            </div>
+        </div>
+        <div class="tile is-parent is-1">
+            <article class="tile is-child">
+                <button id="button-login" class="button is-large ">Dive!</button>
+            </article>
+        </div>
+    </div>
+    <div class="tile">
+        <div class="tile is-vertical is-6">
+            <div class="tile is-parent">
+                <article class="tile is-child">
+                    <p class="title">Hello a Little World!</p>
+                    <p class="subtitle">Your stage is here.</p>
+                    <canvas id="canvas"></canvas>
+                </article>
+            </div>
+            <div class="tile is-parent">
+                <article class="tile is-child">
+                    <p class="title">IM</p>
+                    <p class="subtitle">Shift -> Input your message & ENTER KEY.</p>
+                    <div>
+                        <input type="text" id="msg_input" placeholder="input your message..." class="input"/>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <div class="tile is-parent is-vertical">
+            <article class="tile is-child">
+                <div class="content">
+                    <p class="title">Avatar List</p>
+                    <p class="subtitle">Choose your character!</p>
+                    <div id="character-list" class="columns is-multiline">
+
+                    </div>
+                </div>
+            </article>
+            <article class="tile is-child notification is-danger">
+                <div class="content">
+                    <div class="tile is-parent">
+                        <div class="tile is-child is-6">
+                            <p class="title">Action</p>
+                            <p class="subtitle">Your code convert to UI.</p>
+                        </div>
+                        <div class="tile is-child">
+                            <p id="action" class="title is-1">No Action</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <p>
+                <img src="./assets/avatown.ico" width="12"> <strong>Avatown</strong> by ZennoFact.
+            </p>
+        </div>
+    </div>
+</footer>
+<form name="login" action="http://localhost:8000" method="post">
+<input type="hidden" id="name" name="name" value=""/>
+<input type="hidden" id="image-key" name="imageKey" value=""/>
+<input type="hidden" id="action-name" name="actionName" value=""/>
+</form>
+
+<template id="template">
+    <div class="column is-4">
+        <div class="card">
+            <div class="card-content">
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="" alt="Character">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p><strong>名称</strong></p>
+                            <p><small>@id</small></p>
+                        </div>
+                    </div>
+                </article>
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p><span>なんか説明</span></p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
+<script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+<script src="https://code.createjs.com/soundjs-0.6.2.min.js"></script>
+<script src="https://code.createjs.com/tweenjs-0.6.2.min.js"></script>
+<script src="user.js"></script>
+<script src="avafact.js"></script>
+</body>
+</html>

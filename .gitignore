@@ -1,3 +1,5 @@
 .idea/
 node_modules/
 assets/images/
+assets/css/lib/
+client/assets/css/lib/

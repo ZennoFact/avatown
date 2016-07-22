@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
     <link rel="shortcut icon" href="assets/avatown.ico">
     <title>chat</title>
-    <link rel="stylesheet" href="assets/nomalize.css">
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/css/nomalize.css">
+    <link rel="stylesheet" href="assets/css/lib/bulma.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <canvas id="canvas"></canvas>
 <div>
-    <input type="text" id="msg_input" style="width:200px;" />
-    <button onclick="publishMessage">語る</button>
+    <input type="text" id="msg_input" class="input" placeholder="Input your message..." />
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
@@ -38,10 +38,10 @@
     function publishKeyCode(e) {
         var key = e.keyCode;
         switch (key) {
-            case 17: // Ctrl action 起動
+            case 17: // Ctrl -> User.prototype.action()
                     currentUser.action();
                 break;
-            case 16: // Shift goto message
+            case 16: // Shift -> User.prototype.message()
                 document.removeEventListener('keydown', publishKeyCode);
                 var textInput = document.getElementById('msg_input');
                     textInput.focus();
@@ -52,14 +52,22 @@
             case 40: // Down
                 currentUser.walk(key.toString());
                 break;
+            case 116: // Reload F5対策
+                var user = currentUser;
+                stage.removeChild(user.balloon);
+                stage.removeChild(user.namePlate);
+                stage.removeChild(user);
+                var div = document.getElementById(user.id);
+                document.body.removeChild(div);
+                var msg = '{"keycode":"logout","id":"' + userHash[user.id] + '"}';
+                io.sockets.emit("publish", {value: msg});
+                break;
             default:
-                console.log("特に何もしない");
+//                console.log(key);
                 break;
         }
         var msg = '{"id":"' + currentUser.id + '","name":"' + currentUser.name + '","keycode":"' + e.keyCode + '"}';
         socketio.emit("publish", {value: msg});
-
-//        stage.update();
     }
     function publishMessage(e) {
         var key = e.keyCode;
@@ -72,18 +80,13 @@
             document.addEventListener('keydown', publishKeyCode);
             textInput.blur();
         }
-//        stage.update();
     }
 
     function addMessage (msg) {
         var data = JSON.parse(msg);
         switch (data.keycode) {
             case 'login':
-                if (data.id === myId) {
-                    currentUser = new User(data.id, data.name, data.imageKey, data.actionName);
-                    stage.addChild(currentUser);
-                    currentUser.addMessage('Hello world!');
-                } else {
+               if (data.id !== myId) {
                     var user = new User(data.id, data.name, data.imageKey, data.actionName);
                     users[data.id] = user;
                     stage.addChild(user);
