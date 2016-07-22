@@ -11,19 +11,18 @@ var actionDict = {
 };
 
 stage = new createjs.Stage('canvas');
-document.getElementById('btn-warning-ok').addEventListener('click', function(e) {
-    document.getElementById('factory-warning').style.display = 'none';
-});
-document.getElementById('msg_input').addEventListener('keydown', addMessage);
-document.getElementById('name').addEventListener('keypress', function(e) {
-    if (e.keyCode === 13) false;
-    else true;
-});
 
 function init() {
-    // Step. characterの読み込み
-    loadAvatarList();
+    document.getElementById('btn-warning-ok').addEventListener('click', function() { document.getElementById('factory-warning').style.display = 'none'; });
+    document.getElementById('avatar-name').addEventListener('blur', function() {
+        var name = document.getElementById('avatar-name').value;
+        localStorage.setItem('name', name);
+        document.getElementById('name').value = name;
+    });
+    loadHandleName();
 
+    // Step.1 アバター一覧の読み込もう
+    loadAvatarList();
 }
 
 function createAvatar() {
@@ -36,57 +35,47 @@ function createAvatar() {
     var action = document.getElementById('action-name').value;
 
     if (avatar === undefined) {
-        // Step. characterを生成しよう。
+
+        // Step.2 アバターの生成を画面内に生成しよう
         avatar = new User(id, name, imageKey, action);
-    console.log(avatar);
+
         stage.addChild(avatar);
     } else {
         avatar.image = images[imageKey];
     }
 
-    // Step. アクションを設定しよう
+    // Step.3 'dash'[走る]，'hide'[隠れる]，'titan'[巨大化]のいずれかをアクションとして設定しよう
     avatar.actionSelector('titan');
 
     actionToUI(avatar);
 
-    // Step. キーボード入力を受け取れるようにしよう
+    // Step.4 キーボード入力を読み取れるようにしよう
     document.addEventListener('keydown', avatarControl);
+
+    var btn = document.getElementById('button-login');
+    // Step.6 さあ，世界へ飛び出そう！
+    btn.addEventListener('click', helloWorld);
 }
 
-function addMessage(e) {
+function sendMessage(e) {
     if(e.keyCode === 13) {
         var message = this.value;
         this.value = '';
-        // Step. メッセージの吹き出しを表示しましょう
-        avatar.addMessage(message);
-        this.blur();
+        // Step.5 メッセージの吹き出しを表示しましょう
+        avatar.talk(message);
 
+        this.blur();
+        this.removeEventListener('keydown', sendMessage);
         document.addEventListener('keydown', avatarControl);
     }
 }
-
-// Todo Enterキーが反応してしまう
-//var inputs = document.getElementsByTagName('input');
-//for(var item in inputs) {
-//    item.addEventListener('keydown', function(e) {
-//        if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
-//            var text = document.getElementById('message-box').innerHTML;
-//            if (text !== '') {
-//                // IM送信
-//
-//            }
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    });
-//}
 
 function avatarControl(e) {
     var key = e.keyCode;
     switch (key) {
         case 16: // Shift goto message
             document.removeEventListener('keydown', avatarControl);
+            document.getElementById('msg_input').addEventListener('keydown', sendMessage);
             var textInput = document.getElementById('msg_input');
             textInput.focus();
             return null;
@@ -100,7 +89,7 @@ function avatarControl(e) {
             avatar.walk(key.toString());
             break;
         default:
-//                console.log(key);
+                console.log(key);
             break;
     }
 }
@@ -159,7 +148,7 @@ function loadAvatarList() {
 
     [].forEach.call(document.getElementsByClassName('card'),function(card){
         card.addEventListener('click', function(e) {
-            var name = document.getElementById('name').value;
+            var name = document.getElementById('avatar-name').value;
             if (name !== '') {
                 [].forEach.call(document.getElementsByClassName('card'), function (card) {
                     if (card.classList.contains("notification")) {
@@ -257,4 +246,29 @@ function tickerStart() {
     createjs.Ticker.setFPS(30);
     createjs.Ticker.useRAF = true;
     createjs.Ticker.addEventListener("tick", stage);
+}
+
+function loadHandleName() {
+    if (!window.localStorage) {
+        console.log('This browser do not use Local Storage');
+        return null;
+    }
+    var name = localStorage.getItem('name');
+    if (name !== '') {
+        document.getElementById('avatar-name').value = name;
+        document.getElementById('name').value = name;
+        document.getElementById('factory-warning').style.display = 'none';
+    }
+}
+
+function helloWorld() {
+    console.log('wait');
+    var form = document.login;
+    var name = form.name.value;
+    var key = form.imageKey.value;
+    var act = form.actionName.value;
+    if (name !== '' && key !== '' && act !== '') {
+        console.log('send');
+        form.submit();
+    }
 }

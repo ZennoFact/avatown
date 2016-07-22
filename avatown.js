@@ -14,7 +14,7 @@ var server = require("http").createServer(function(req, res) {
                 req.on('end', function() {
                     POST = qs.parse(body);
                     res.writeHead(200, {"Content-Type":"text/html"});
-                    var output = fs.readFileSync("./avafact.html", "utf-8");
+                    var output = fs.readFileSync("./index.html", "utf-8");
                     console.log(POST);
                     //var name = new String("'" + POST.name + "'");
                     //var img = new String("'" + POST.imageKey + "'");

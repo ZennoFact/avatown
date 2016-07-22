@@ -13,7 +13,7 @@ function User(id, name, imageKey, actionName, x, y, scaleX, scaleY, alpha, speed
     this.alpha = alpha || 1.0;
     this.speed = speed || 5;
 
-    this.namePlate = new createjs.Text(name, "24px serif", "DarkRed");
+    this.namePlate = new createjs.Text(name, "24px consolas", "#40aaef");
     this.namePlate.x = window.innerWidth / 2 - this.image.width / 2;
     this.namePlate.y = this.y - 30;
     this.namePlate.textAlign = 'center';

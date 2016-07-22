@@ -21,10 +21,16 @@ function init() {
 
     //TODO なぜか出ない
     document.getElementById('canvas').style.backgroundColor = '#a0d8ef';
-    ground = new createjs.Shape();
-    ground.graphics.beginFill("DarkRed");
-    ground.graphics.drawRect(0, stage.height - 700, stage.width, 700);
-    stage.addChild(ground);
+    var shape = new createjs.Shape();
+    shape.graphics.beginFill("#000").drawRect(0,0,100,100);
+    shape.x = 10;
+    shape.y = 10;
+    stage.addChild(shape);
+    stage.update();
+    //ground = new createjs.Shape();
+    //ground.graphics.beginFill("DarkRed");
+    //ground.graphics.drawRect(0, stage.height - 700, stage.width, 700);
+    //stage.addChild(ground);
     console.log('mapset');
 
     //currentUser = new User(data.id, data.name, data.imageKey, data.actionName);

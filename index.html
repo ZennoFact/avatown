@@ -38,10 +38,10 @@
     function publishKeyCode(e) {
         var key = e.keyCode;
         switch (key) {
-            case 17: // Ctrl action 起動
+            case 17: // Ctrl -> User.prototype.action()
                     currentUser.action();
                 break;
-            case 16: // Shift goto message
+            case 16: // Shift -> User.prototype.message()
                 document.removeEventListener('keydown', publishKeyCode);
                 var textInput = document.getElementById('msg_input');
                     textInput.focus();
@@ -68,8 +68,6 @@
         }
         var msg = '{"id":"' + currentUser.id + '","name":"' + currentUser.name + '","keycode":"' + e.keyCode + '"}';
         socketio.emit("publish", {value: msg});
-
-//        stage.update();
     }
     function publishMessage(e) {
         var key = e.keyCode;
@@ -82,7 +80,6 @@
             document.addEventListener('keydown', publishKeyCode);
             textInput.blur();
         }
-//        stage.update();
     }
 
     function addMessage (msg) {
