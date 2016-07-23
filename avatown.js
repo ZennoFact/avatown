@@ -69,6 +69,12 @@ var server = require("http").createServer(function(req, res) {
             res.write(png);
             res.end();
             break;
+        case '/assets/images/d-64x100.png':
+            var png = fs.readFileSync('./assets/images/d-64x100.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
         case '/assets/images/m-64x64.png':
             var png = fs.readFileSync('./assets/images/m-64x64.png');
             res.writeHead(200, {'Content-Type': 'image/png'});
@@ -99,8 +105,8 @@ var server = require("http").createServer(function(req, res) {
             res.write(png);
             res.end();
             break;
-        case '/assets/images/r-64x64.png':
-            var png = fs.readFileSync('./assets/images/r-64x64.png');
+        case '/assets/images/d-64x64.png':
+            var png = fs.readFileSync('./assets/images/d-64x64.png');
             res.writeHead(200, {'Content-Type': 'image/png'});
             res.write(png);
             res.end();
@@ -129,6 +135,12 @@ var server = require("http").createServer(function(req, res) {
             res.write(css);
             res.end();
             break;
+        case '/assets/css/lib/screen.css':
+            var css = fs.readFileSync('./assets/css/lib/screen.css');
+            res.writeHead(200, {'Content-Type': 'text/css'});
+            res.write(css);
+            res.end();
+            break;
     }
 }).listen(8000);
 var io = require("socket.io").listen(server);
@@ -145,7 +157,7 @@ io.sockets.on("connection", function (socket) {
         console.log(msg);
         userHash[socket.id] = id;
         console.log("userHash:" + userHash);
-        io.sockets.emit("publish", {value: msg});
+        socket.broadcast.emit("publish", {value: msg});
     });
 
     // メッセージ送信カスタムイベント

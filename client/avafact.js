@@ -5,8 +5,8 @@ var images = {};
 var canvas = document.getElementById('canvas');
 
 var actionDict = {
-    'dash': '熱光学迷彩',
-    'hide': '加速装置(×10)',
+    'dash': '加速装置(×10)',
+    'hide': '熱光学迷彩',
     'titan': '怒りの巨人化'
 };
 
@@ -45,7 +45,7 @@ function createAvatar() {
     }
 
     // Step.3 'dash'[走る]，'hide'[隠れる]，'titan'[巨大化]のいずれかをアクションとして設定しよう
-    avatar.actionSelector('titan');
+    avatar.actionSelector('hide');
 
     actionToUI(avatar);
 
@@ -127,7 +127,7 @@ function loadAvatarList() {
             description: '家庭用お手伝いロボット。動力源はまさかの光合成。いつも青白いので体調が心配。'
         },
         'char6': {
-            img: './assets/images/r-64x64.png',
+            img: './assets/images/d-64x64.png',
             name: 'たかし',
             at: '@dragon',
             description: '漢字では隆。拳がすべての世界で生きる日本人。赤い鉢巻きがラッキーアイテム。'
@@ -212,7 +212,7 @@ function preload() {
         "src": "./assets/images/i-64x100.png"
     }, {
         "id": "dragon",
-        "src": "./assets/images/r-64x100.png"
+        "src": "./assets/images/d-64x100.png"
     }
     ];
     // 指定したリスト（マニフェスト）に従って画像を読み込む
