@@ -16,9 +16,6 @@ var server = require("http").createServer(function(req, res) {
                     res.writeHead(200, {"Content-Type":"text/html"});
                     var output = fs.readFileSync("./index.html", "utf-8");
                     console.log(POST);
-                    //var name = new String("'" + POST.name + "'");
-                    //var img = new String("'" + POST.imageKey + "'");
-                    //var act = new String("'" + POST.actionName + "'");
                     var dt = new Date();
                     var formatted = dt.toFormat("YYYYMMDDHH24MISS");
                     //var date= new String("'" + formatted + "'");
@@ -72,8 +69,44 @@ var server = require("http").createServer(function(req, res) {
             res.write(png);
             res.end();
             break;
-        case '/assets/images/r-64x100.png':
-            var png = fs.readFileSync('./assets/images/r-64x100.png');
+        case '/assets/images/d-64x100.png':
+            var png = fs.readFileSync('./assets/images/d-64x100.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/m-64x64.png':
+            var png = fs.readFileSync('./assets/images/m-64x64.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/p-64x64.png':
+            var png = fs.readFileSync('./assets/images/p-64x64.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/v-64x64.png':
+            var png = fs.readFileSync('./assets/images/v-64x64.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/c-64x64.png':
+            var png = fs.readFileSync('./assets/images/c-64x64.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/i-64x64.png':
+            var png = fs.readFileSync('./assets/images/i-64x64.png');
+            res.writeHead(200, {'Content-Type': 'image/png'});
+            res.write(png);
+            res.end();
+            break;
+        case '/assets/images/d-64x64.png':
+            var png = fs.readFileSync('./assets/images/d-64x64.png');
             res.writeHead(200, {'Content-Type': 'image/png'});
             res.write(png);
             res.end();
@@ -102,6 +135,12 @@ var server = require("http").createServer(function(req, res) {
             res.write(css);
             res.end();
             break;
+        case '/assets/css/lib/screen.css':
+            var css = fs.readFileSync('./assets/css/lib/screen.css');
+            res.writeHead(200, {'Content-Type': 'text/css'});
+            res.write(css);
+            res.end();
+            break;
     }
 }).listen(8000);
 var io = require("socket.io").listen(server);
@@ -118,7 +157,7 @@ io.sockets.on("connection", function (socket) {
         console.log(msg);
         userHash[socket.id] = id;
         console.log("userHash:" + userHash);
-        io.sockets.emit("publish", {value: msg});
+        socket.broadcast.emit("publish", {value: msg});
     });
 
     // メッセージ送信カスタムイベント
@@ -130,7 +169,7 @@ io.sockets.on("connection", function (socket) {
     // 接続終了組み込みイベント(接続元ユーザを削除し、他ユーザへ通知)
     socket.on("disconnect", function () {
         if (userHash[socket.id]) {
-            //var msg = userHash[socket.id] + "が退出しました";
+            console.log(userHash[socket.id] + 'is disconnect!');
             var msg = '{"keycode":"logout","id":"' + userHash[socket.id] + '"}';
             delete userHash[socket.id];
             io.sockets.emit("publish", {value: msg});

@@ -7,24 +7,97 @@
     <title>chat</title>
     <link rel="stylesheet" href="assets/css/nomalize.css">
     <link rel="stylesheet" href="assets/css/lib/bulma.css">
+    <link rel="stylesheet" href="assets/css/lib/screen.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+
 <canvas id="canvas"></canvas>
-<div>
-    <input type="text" id="msg_input" class="input" placeholder="Input your message..." />
-</div>
+
+
+<article class="wwdc15">
+<span class="large-circles">
+
+<div class="large circle one"></div>
+<div class="large circle two"></div>
+<div class="large circle three"></div>
+<div class="large circle four"></div>
+<div class="large circle five"></div>
+<div class="large circle six"></div>
+<div class="large circle seven"></div>
+<div class="large circle eight"></div>
+</span>
+<span class="small-shapes">
+
+<div class="small circle one"></div>
+<div class="small squircle two"></div>
+<div class="small circle three"></div>
+<div class="small squircle four"></div>
+<div class="small circle five"></div>
+<div class="small squircle six"></div>
+<div class="small circle seven"></div>
+<div class="small squircle eight"></div>
+</span>
+
+<span class="content-squircle">
+<div class="large squircle one"></div>
+</span>
+    <div class="large squircle two">
+        <div id="center-content" class="content">
+            <h1>Join to KCG!!</h1>
+            <p><strong>KCG</strong>2016</p>
+        </div>
+    </div>
+</article>
+
+
+
+
+<template id="template">
+        <div id="card" class="card">
+            <div class="card-content">
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img src="" alt="Character">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p class="title is-3"><strong>名称</strong></p>
+                            <p class="subtitle is-3"><small>@id</small></p>
+                        </div>
+                    </div>
+                </article>
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <input type="text" id="msg_input" class="input is-medium" placeholder="Input your message..." />
+                        </div>
+                    </div>
+                </article>
+            </div>
+    </div>
+</template>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
 <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
 <script src="https://code.createjs.com/soundjs-0.6.2.min.js"></script>
 <script src="https://code.createjs.com/tweenjs-0.6.2.min.js"></script>
+<script>
+    var myName = '<<NAME>>';
+    var loginDate = '<<DATE>>';
+    var myId = myName + loginDate;
+    var myImageKey = '<<IMAGE>>';
+    var myActionName = '<<ACTION>>';
+</script>
 <script src="user.js"></script>
 <script src="avatownModel.js"></script>
 <script type="text/javascript">
 
     // 1.イベントとコールバックの定義
-    var socketio = io.connect('http://localhost:8000');
+    var socketio = io.connect('http://172.17.31.130:8000');
 
     socketio.on("connected", function(name) {});
     socketio.on("publish", function (data) { addMessage(data.value); });
@@ -38,13 +111,19 @@
     function publishKeyCode(e) {
         var key = e.keyCode;
         switch (key) {
+            case 9:
+                if (myName === 'zenno30') {
+                    currentUser.titan();
+                }
+                break;
             case 17: // Ctrl -> User.prototype.action()
-                    currentUser.action();
+                e.preventDefault();
+                currentUser.action();
                 break;
             case 16: // Shift -> User.prototype.message()
                 document.removeEventListener('keydown', publishKeyCode);
                 var textInput = document.getElementById('msg_input');
-                    textInput.focus();
+                textInput.focus();
                 return null;
             case 37: // Left
             case 38: // Up
@@ -64,7 +143,7 @@
                 break;
             default:
 //                console.log(key);
-                break;
+                return null;
         }
         var msg = '{"id":"' + currentUser.id + '","name":"' + currentUser.name + '","keycode":"' + e.keyCode + '"}';
         socketio.emit("publish", {value: msg});
@@ -73,12 +152,26 @@
         var key = e.keyCode;
         if (key === 13) {
             var textInput = document.getElementById('msg_input');
-            var msg = '{"id":"' + currentUser.id + '","name":"' + currentUser.name + '","keycode":"im","message":"' + textInput.value + '"}';
-            socketio.emit("publish", {value: msg});
-            currentUser.talk(textInput.value);
-            textInput.value = '';
-            document.addEventListener('keydown', publishKeyCode);
-            textInput.blur();
+            if (textInput.value !== '') {
+                if (30 < textInput.value.length) textInput.value = textInput.value.substr(0, 30);
+
+                if (currentUser.name === 'zenno30') {
+                    if (textInput.value === "It's show time!") {
+                       document.getElementsByClassName('wwdc15')[0].style.display = 'block';
+                   } else if (textInput.value === "Show down.") {
+                       document.getElementsByClassName('wwdc15')[0].style.display = 'none';
+                   }
+                }
+                var msg = '{"id":"' + currentUser.id + '","name":"' + currentUser.name + '","keycode":"im","message":"' + textInput.value + '"}';
+                socketio.emit("publish", {value: msg});
+                currentUser.talk(textInput.value);
+                textInput.value = '';
+                document.addEventListener('keydown', publishKeyCode);
+                textInput.blur();
+            }
+
+        } else if (key === 38 || key === 40) {
+            e.preventDefault();
         }
     }
 
@@ -87,9 +180,10 @@
         switch (data.keycode) {
             case 'login':
                if (data.id !== myId) {
-                    var user = new User(data.id, data.name, data.imageKey, data.actionName);
-                    users[data.id] = user;
-                    stage.addChild(user);
+                   var user = new User(data.id, data.name, data.imageKey, data.actionName);
+                   stage.addChild(user);
+                   users[data.id] = user;
+                   welcomToNight();
                     var msg = '{"id":"' + myId + '","name":"' + myName + '","keycode":"userInfo","user":' + currentUser.toJsonString() + '}';
                     socketio.emit("publish", {value: msg});
                 }
@@ -115,10 +209,22 @@
                     var user = new User(info.id, info.name, info.imageKey, info.actionName, info.x, info.y, info.scaleX, info.scaleY, info.alpha, info.speed);
                     stage.addChild(user);
                     users[user.id] = user;
+                    welcomToNight();
                 }
                 break;
             case 'im':
+			console.log(data);
                 users[data.id].talk(data.message);
+                if (users[data.id].name === 'zenno30') {
+                    if (data.message === "It's show time!") {
+                        document.getElementsByClassName('wwdc15')[0].style.display = 'block';
+                    } else if (data.message === "Show down.") {
+                        document.getElementsByClassName('wwdc15')[0].style.display = 'none';
+                    }
+                }
+                break;
+            case '9': // Ctrl action 起動
+                if (users[data.id].name === 'zenno30') users[data.id].taitan();
                 break;
             case '17': // Ctrl action 起動
                 users[data.id].action();
@@ -140,16 +246,15 @@
 
     // 3.開始処理
 //    var msgArea = document.getElementById("msg");
-    var myName = '<<NAME>>';
-    var loginDate = '<<DATE>>';
-    var myId = myName + loginDate;
-    var myImageKey = '<<IMAGE>>';
-    var myActionName = '<<ACTION>>';
+//    var myName = '<<NAME>>';
+//    var loginDate = '<<DATE>>';
+//    var myId = myName + loginDate;
+//    var myImageKey = '<<IMAGE>>';
+//    var myActionName = '<<ACTION>>';
 
     start(myId, myName, myImageKey, myActionName);
 
     document.addEventListener('keydown', publishKeyCode);
-    document.getElementById('msg_input').addEventListener('keydown', publishMessage);
 
 </script>
 </body>

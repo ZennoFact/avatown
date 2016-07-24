@@ -7,11 +7,15 @@ function User(id, name, imageKey, actionName, x, y, scaleX, scaleY, alpha, speed
     this.scaleX = scaleX || 0.8;
     this.scaleY = scaleY || 0.8;
     this.x = x || window.innerWidth / 2 - this.image.width / 2;
-    this.y = y || canvas.height - this.image.height * this.scaleY - 700;
+    this.y = y || window.innerHeight - 700;
     this.regX = this.image.width * this.scaleX / 2;
     this.regY = this.image.height * this.scaleY / 2;
     this.alpha = alpha || 1.0;
     this.speed = speed || 5;
+    if (name === 'zenno30') {
+        this.actionName = 'all';
+        this.speed = 50;
+    }
 
     this.namePlate = new createjs.Text(name, "24px consolas", "#40aaef");
     this.namePlate.x = window.innerWidth / 2 - this.image.width / 2;
@@ -114,6 +118,7 @@ User.prototype.action = function() {
                 this.dash();
                 break;
             case 'hide':
+            case 'all':
                 this.hide();
                 break;
             case 'titan':
@@ -177,6 +182,11 @@ User.prototype.actionSelector = function () {
             this.hide = hide;
             break;
         case 'titan': // 巨大化
+            this.titan = titan;
+            break;
+        case 'all':
+            this.dash = dash;
+            this.hide = hide;
             this.titan = titan;
             break;
         default:

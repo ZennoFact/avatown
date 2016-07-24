@@ -9,7 +9,6 @@ function User(id, name, imageKey, actionName, x, y, scaleX, scaleY, alpha, speed
     this.regX = this.image.width * this.scaleX / 2;
     this.regY = this.image.height * this.scaleY / 2;
     var canvasRect = getAbsolutePos(canvas);
-    console.log(canvasRect);
     this.x = x || canvasRect.width / 7;
     this.y = y || canvasRect.height / 8;
     this.alpha = alpha || 1.0;
